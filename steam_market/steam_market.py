@@ -46,3 +46,6 @@ def get_item(game_id, item):
 
 def get_tf2_item(item):
     return get_item('440', item)
+
+def encode_for_url(string):
+    return string.replace(' ', '%20')
