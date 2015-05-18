@@ -1,13 +1,36 @@
 import requests
 from bs4 import BeautifulSoup
 
+# constants
+LISTING_ID_PREFIX = 'listing_'
+
 class MarketItem:
-    def __init__(self, item_id, listings=None):
+    def __init__(self, item_id=None, listings=None):
         self.id = item_id
-        self.listings = []
+
+        if listings:
+            self.listings = listings
+        else:
+            self.listings = []
+
+class MarketListing:
+    def __init__(self, listing_id, price):
+        self.id = listing_id
+        self.price = price
 
 def parse_item(html):
-    
+    soup = BeautifulSoup(html)
+    market_item = MarketItem()
+
+    for listing in soup.find_all('div', {'class': 'market_listing_row'}):
+        text = listing.find('span', {'class': 'market_listing_price_with_fee'}).text.strip()
+        if text.startswith('$'):
+            market_item.listings.append(MarketListing(
+                listing_id = listing.get('id').replace(LISTING_ID_PREFIX, ''),
+                price = float(text[1:])
+            ))
+
+    return market_item
 
 def get_item_from_url(url):
     r = requests.get(url)
