@@ -5,4 +5,8 @@ Python API for getting prices from the Steam market.
 
 ## Usage
 
-    steam_market.get_tf2_item(steam_market.encode_for_url('Strange Killstreak Flame Thrower'))
+```python
+import steam_market
+
+steam_market.get_tf2_item(steam_market.encode_for_url('Strange Killstreak Flame Thrower'))
+```
