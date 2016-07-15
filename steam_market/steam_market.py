@@ -19,16 +19,17 @@ class MarketListing:
         self.price = price
 
 def parse_item(html):
-    soup = BeautifulSoup(html)
+    soup = BeautifulSoup(html, 'html.parser')
     market_item = MarketItem()
 
     for listing in soup.find_all('div', {'class': 'market_listing_row'}):
-        text = listing.find('span', {'class': 'market_listing_price_with_fee'}).text.strip()
-        if text.startswith('$'):
-            market_item.listings.append(MarketListing(
-                listing_id = listing.get('id').replace(LISTING_ID_PREFIX, ''),
-                price = float(text[1:])
-            ))
+        if listing.attrs['id'] != 'market_buyorder_info':
+            text = listing.find('span', {'class': 'market_listing_price_with_fee'}).text.strip()
+            if text.startswith('$'):
+                market_item.listings.append(MarketListing(
+                    listing_id = listing.get('id').replace(LISTING_ID_PREFIX, ''),
+                    price = float(text[1:])
+                ))
 
     return market_item
 

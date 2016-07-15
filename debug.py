@@ -15,6 +15,6 @@ items = [
 ]
 
 for item in items:
-    print item
+    print(item)
     market_item = sm.get_tf2_item(encode_for_url(item))
-    print [i.price for i in market_item.listings]
+    print([i.price for i in market_item.listings])
