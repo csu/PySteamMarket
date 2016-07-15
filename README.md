@@ -11,5 +11,5 @@ from steam_market import encode_for_url
 
 item = sm.get_tf2_item(encode_for_url('Strange Professional Killstreak Scattergun'))
 for listing in item.listings:
-    print listing.price
+    print(listing.price)
 ```

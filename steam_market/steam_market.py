@@ -19,7 +19,7 @@ class MarketListing:
         self.price = price
 
 def parse_item(html):
-    soup = BeautifulSoup(html)
+    soup = BeautifulSoup(html, 'html.parser')
     market_item = MarketItem()
 
     for listing in soup.find_all('div', {'class': 'market_listing_row'}):

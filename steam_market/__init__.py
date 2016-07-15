@@ -1,1 +1,1 @@
-from steam_market import *
+from .steam_market import *
