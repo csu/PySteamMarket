@@ -1,3 +1,5 @@
+#!/usr/bin/env python3
+
 import steam_market as sm
 from steam_market import encode_for_url
 
