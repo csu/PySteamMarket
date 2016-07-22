@@ -2,7 +2,6 @@
 
 import unittest
 import steam_market as sm
-from steam_market import encode_for_url
 
 class TestTF2Items(unittest.TestCase):
     def runTest(self):
@@ -21,5 +20,5 @@ class TestTF2Items(unittest.TestCase):
 
         for item in items:
             print(item)
-            market_item = sm.get_tf2_item(encode_for_url(item))
+            market_item = sm.get_tf2_item(item)
             print([i.price for i in market_item.listings])

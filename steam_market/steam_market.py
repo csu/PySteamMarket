@@ -1,4 +1,4 @@
-import requests
+import requests, urllib
 from bs4 import BeautifulSoup
 
 # constants
@@ -41,12 +41,9 @@ def get_item(game_id, item):
     url = 'http://steamcommunity.com/market/listings/%(game_id)s/%(item)s'
     payload = {
         'game_id': game_id,
-        'item': item
+        'item': urllib.parse.quote(item)
     }
     return get_item_from_url(url % payload)
 
 def get_tf2_item(item):
     return get_item('440', item)
-
-def encode_for_url(string):
-    return string.replace(' ', '%20')
