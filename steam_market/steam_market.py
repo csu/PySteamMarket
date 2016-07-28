@@ -12,7 +12,7 @@ LISTING_ID_PREFIX = 'listing_'
 
 class MarketItem:
     def __init__(self, item_id=None, listings=None):
-        self.id = item_id
+        self._id = item_id
 
         if listings:
             self.listings = listings
@@ -21,7 +21,7 @@ class MarketItem:
 
 class MarketListing:
     def __init__(self, listing_id, price):
-        self.id = listing_id
+        self._id = listing_id
         self.price = price
 
 # Currency abbreviations
