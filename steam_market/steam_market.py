@@ -5,24 +5,24 @@ TODO:
   * add all currencies supported by the Steam Marketplace to `curAbbrev`
   * create docstrings for all functions
   * listings parser; get total number of listings (`total_count` in JSON)
+  * get price overview via http://steamcommunity.com/market/priceoverview/
 '''
-
-# constants
-LISTING_ID_PREFIX = 'listing_'
-
-class MarketItem:
-    def __init__(self, item_id=None, listings=None):
-        self._id = item_id
-
-        if listings:
-            self.listings = listings
-        else:
-            self.listings = []
 
 class MarketListing:
     def __init__(self, listing_id, price):
         self._id = listing_id
         self.price = price
+
+class MarketItem:
+    def __init__(self, item_id=None, listings=None):
+        self._id = item_id
+        if listings:
+            self.listings = listings
+        else:
+            self.listings = []
+
+    def add_listing(self, l_id, price):
+        self.listings.append(MarketListing(l_id, price))
 
 # Currency abbreviations
 curAbbrev = {
@@ -75,12 +75,8 @@ def get_item(game_id, item, start=0, count=10, currency='USD'):
     listings = resp.json()['listinginfo']
     market_item = MarketItem()
     for l_id, v in listings.items():
-        # listinginfo -> (listingid) -> converted_price_per_unit + converted_fee_per_unit
         price = v['converted_price_per_unit'] + v['converted_fee_per_unit']
-        market_item.listings.append(MarketListing(
-            listing_id = l_id,
-            price = price
-        ))
+        market_item.add_listing(l_id, price)
     return market_item
 
 def get_tf2_item(item, start=0, count=10, currency='USD'):
