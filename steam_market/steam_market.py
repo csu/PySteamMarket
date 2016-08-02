@@ -81,3 +81,6 @@ def get_item(game_id, item, start=0, count=10, currency='USD'):
 
 def get_tf2_item(item, start=0, count=10, currency='USD'):
     return get_item('440', item, start, count)
+
+def get_csgo_item(item, start=0, count=10, currency='USD'):
+    return get_item('730', item, start, count)
