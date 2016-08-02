@@ -1,52 +1,86 @@
-import requests
-from bs4 import BeautifulSoup
+import requests, urllib
 
-# constants
-LISTING_ID_PREFIX = 'listing_'
+'''
+TODO:
+  * add all currencies supported by the Steam Marketplace to `curAbbrev`
+  * create docstrings for all functions
+  * listings parser; get total number of listings (`total_count` in JSON)
+  * get price overview via http://steamcommunity.com/market/priceoverview/
+'''
+
+class MarketListing:
+    def __init__(self, listing_id, price):
+        self._id = listing_id
+        self.price = price
 
 class MarketItem:
     def __init__(self, item_id=None, listings=None):
-        self.id = item_id
-
+        self._id = item_id
         if listings:
             self.listings = listings
         else:
             self.listings = []
 
-class MarketListing:
-    def __init__(self, listing_id, price):
-        self.id = listing_id
-        self.price = price
+    def add_listing(self, l_id, price):
+        self.listings.append(MarketListing(l_id, price))
 
-def parse_item(html):
-    soup = BeautifulSoup(html, 'html.parser')
+# Currency abbreviations
+curAbbrev = {
+    'USD' : 1,
+    'GBP' : 2,
+    'EUR' : 3,
+    'CHF' : 4,
+    'RUB' : 5,
+    'KRW' : 16,
+    'CAD' : 20,
+}
+
+"""
+Gets item listings from the Steam Marketplace.
+
+@param game_id: ID of game item belongs to.
+@param item: Name of item to lookup.
+@param start: Listing index to start from. 0 is the most recent listing.
+@param start: number >= 0
+@param count: Number of listings to grab, start and beyond.
+@param count: number >= 1
+@param currency: Abbreviation of currency to return listing prices in.
+@type currency:
+    Accepted currencies:
+
+      - USD
+      - GBP
+      - EUR
+      - CHF
+      - RUB
+      - KRW
+      - CAD
+
+    Please lookup the proper abbreviation for your currency of choice.
+@return A list of prices. Depending on your chosen currency, you may need to
+    move the decimal place. For instance, in USD, $25.98 would be returned
+    as 2598
+"""
+def get_item(game_id, item, start=0, count=10, currency='USD'):
+    url = 'http://steamcommunity.com/market/listings/{}/{}/render'.format(
+        game_id,
+        urllib.parse.quote(item)
+    )
+    payload = {
+        'start' : start,
+        'count' : count,
+        'currency' : curAbbrev[currency]
+    }
+    resp = requests.get(url, params=payload)
+    listings = resp.json()['listinginfo']
     market_item = MarketItem()
-
-    for listing in soup.find_all('div', {'class': 'market_listing_row'}):
-        if listing.attrs['id'] != 'market_buyorder_info':
-            text = listing.find('span', {'class': 'market_listing_price_with_fee'}).text.strip()
-            if text.startswith('$'):
-                market_item.listings.append(MarketListing(
-                    listing_id = listing.get('id').replace(LISTING_ID_PREFIX, ''),
-                    price = float(text[1:])
-                ))
-
+    for l_id, v in listings.items():
+        price = v['converted_price_per_unit'] + v['converted_fee_per_unit']
+        market_item.add_listing(l_id, price)
     return market_item
 
-def get_item_from_url(url):
-    r = requests.get(url)
-    return parse_item(r.text)
+def get_tf2_item(item, start=0, count=10, currency='USD'):
+    return get_item('440', item, start, count)
 
-def get_item(game_id, item):
-    url = 'http://steamcommunity.com/market/listings/%(game_id)s/%(item)s'
-    payload = {
-        'game_id': game_id,
-        'item': item
-    }
-    return get_item_from_url(url % payload)
-
-def get_tf2_item(item):
-    return get_item('440', item)
-
-def encode_for_url(string):
-    return string.replace(' ', '%20')
+def get_csgo_item(item, start=0, count=10, currency='USD'):
+    return get_item('730', item, start, count)
