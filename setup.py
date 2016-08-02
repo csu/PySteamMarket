@@ -8,7 +8,7 @@ except ImportError:
 setup(
     name = 'steam_market',
     packages = ['steam_market'],
-    version = '0.1.0',
+    version = '0.2.0',
     description = 'A Python API for getting prices from the Steam market.',
     author = 'Christopher Su',
     author_email = 'chris+gh@christopher.su',
